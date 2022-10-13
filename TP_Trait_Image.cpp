@@ -11,6 +11,9 @@ using namespace cv;
 
 //Image,ligne,colone,couleur
 void setPixel(Mat&, int, int, uchar);
+void setPixelV2(Mat&, int, int, uchar);
+void setPixelV3(Mat&, int, int, uchar);
+uchar getPixel(Mat&, int, int);
 void setImgInGray(Mat&, Mat&);
 void setLigneHorizontal(Mat&, int, int, int);
 void setLigneVertical(Mat&, int, int, int);
@@ -24,6 +27,7 @@ int main()
     std::string image_path = samples::findFile("starry_night.jpg");
     Mat imgOrig = imread(image_path, IMREAD_COLOR);
     Mat imgGray = imread("starr_night_gray.jpg", IMREAD_GRAYSCALE);
+    Mat imgBnW = imread("starr_night_gray.jpg", IMREAD_GRAYSCALE);
 
     if (imgOrig.empty())//Si le fichier n'existe pas
     {
@@ -35,35 +39,41 @@ int main()
     setImgInGray(imgOrig, imgGray);
     for (int i = 0; i < imgGray.rows; i++)
         for (int j = 0; j < imgGray.cols; j++)
-            setPixel(imgGray, i, j, NOIR);        
+            setPixelV2(imgGray, i, j, NOIR);        
     
-    int lg = 200, indexLg = 0,
-        la = 150, indexLa = 0,
-        dia = (200) ^ 2 + (100) ^ 2;
-    
+   
     // Sans iterator
-    int cote = 150, i = 0, j = 0;
+    int cote = 150;
     setLigneHorizontal(imgGray, 45, 45, cote);
     setLigneVertical(imgGray, 45, 45, cote);
     setLigneHorizontal(imgGray, 195, 45, cote);
     setLigneVertical(imgGray, 45, 195, cote);
     
     int posPixelLigne = 45, posPixelCol = 45;
-
+    
+    //diagonal haut gauche vers bas droite
     while (posPixelLigne <= 195 && posPixelCol <= 195)
     {
-        setPixel(imgGray, posPixelLigne, posPixelCol, BLANC);
+        //setPixel(imgGray, posPixelLigne, posPixelCol, BLANC);
+        //setPixelV2(imgGray, posPixelLigne, posPixelCol, BLANC);
+        setPixelV3(imgGray, posPixelLigne, posPixelCol, BLANC);
         posPixelLigne++; posPixelCol++;
     }
-    posPixelLigne = 45;
-    posPixelCol = 195;
+    
+    //diagonal haut droite vers bas gauche
+    posPixelLigne = 45; posPixelCol = 195;
     while (posPixelLigne <= 195 && posPixelCol >= 45)
     {
-        setPixel(imgGray, posPixelLigne, posPixelCol, BLANC);
+        //setPixel(imgGray, posPixelLigne, posPixelCol, BLANC);
+        //setPixelV2(imgGray, posPixelLigne, posPixelCol, BLANC);
+        setPixelV3(imgGray, posPixelLigne, posPixelCol, BLANC);
         posPixelLigne++; posPixelCol--;
     }
-      
 
+
+    
+     
+    
 
 
 
@@ -90,15 +100,20 @@ void setLigneHorizontal(Mat& img,int posLigne,int posCol, int taille)
 {
     for (int c = posCol; c <= (taille+posCol); c++)
     {
-        setPixel(img, posLigne, c, BLANC);
+         //setPixel(img, posLigne, c, BLANC);
+         //setPixelV2(img, posLigne, c, BLANC);
+         setPixelV3(img, posLigne, c, BLANC);
     }
+
 }
 
 void setLigneVertical(Mat& img, int posLigne, int posColone, int taille)
 {
     for (int r = posLigne; r <= (taille+posLigne); r++)
     {
-        setPixel(img, r, posColone, BLANC);
+        //setPixel(img, r, posColone, BLANC);
+        //setPixelV2(img, r, posColone, BLANC);
+        setPixelV3(img, r, posColone, BLANC);
     }
 }
 
@@ -106,4 +121,25 @@ void setPixel(Mat &image, int ligne, int col, uchar couleur)
 {
     CV_Assert(image.channels() == 1);//si l'image est à un seul channel (1 octet)
     image.at<uchar>(ligne, col) = couleur;
+}
+
+uchar getPixel(Mat& img, int ligne, int col)
+{
+    return img.at<uchar>(ligne, col);
+}
+
+void setPixelV2(Mat& img, int ligne, int col, uchar couleur)
+{
+    MatIterator_<uchar> it;
+    it = img.begin<uchar>();
+    if (it + (ligne * img.cols + col) < img.end<uchar>())
+        *(it + (ligne * img.cols + col)) = couleur;
+
+}
+
+void setPixelV3(Mat& img, int ligne, int col, uchar couleur)
+{
+    uchar* ptr = img.ptr();
+    *(ptr + (ligne * img.cols + col)) = couleur;
+
 }
