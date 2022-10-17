@@ -146,7 +146,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CTraitementImage.cpp" />
     <ClCompile Include="TP_Trait_Image.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CTraitementImage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
