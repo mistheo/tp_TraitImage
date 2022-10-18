@@ -8,7 +8,8 @@
 #include <iostream>
 #include "CTraitementImage.h"
 using namespace cv;
-
+//CONSTANTES
+const unsigned char BLANC = 255, NOIR = 0;
 //Image,ligne,colone,couleur
 void dessinCarre(Mat&);
 void setPixel(Mat&, int, int, uchar);
@@ -18,33 +19,74 @@ uchar getPixel(Mat&, int, int);
 void setLigneHorizontal(Mat&, int, int, int);
 void setLigneVertical(Mat&, int, int, int);
 
-//CONSTANTES
-const unsigned char BLANC = 255, NOIR = 0;
-
-
 int main()
 {
-    std::string image_path = "Images/Image4balles.png"; Mat imgOrig = imread(image_path, IMREAD_COLOR); 
+    CTraitementImage 
+        traitImg;
+    std::string 
+        image_path = "Images/Image9Balles.png",
+        video_path = "Images/Film1BisTpBalle.mp4";
+    cv::Mat
+        imgOrig = imread(image_path, IMREAD_COLOR),
+        imgVid,
+        imgBnW,
+        imgEros,
+        imgDila;
+    cv::VideoCapture 
+        myVid(video_path, CAP_FFMPEG);
+
     if (imgOrig.empty())//Si le fichier n'existe pas
     {
-        std::cout << "Could not read the image: " << image_path << std::endl;
+        std::cout << "-- Could not read the image: " << image_path << std::endl;
         return 1;
     }
-
-    CTraitementImage traitImg;
-
-    Mat imgBnW = traitImg.binarisation(imgOrig,128);
-    Mat imgEros = traitImg.erosion(imgBnW);
-    for (int l = 0; l < 100; l++)
-        imgEros = traitImg.erosion(imgEros);
-
-    imshow(image_path + " Origine ", imgOrig);
-    imshow(image_path + " Binarisation ", imgBnW);
-    imshow(image_path + " Erosion ", imgEros);
-    if (waitKey(0) == 's')
+    if (!myVid.isOpened())
     {
-        imwrite(image_path, imgOrig);
+        std::cout << "-- Error opening video stream or file" << std::endl;
+        return -1;
     }
+
+    
+    //int q = 0;
+    //int i_img = 39;
+    //int cptMoy = 0;
+    //int cpt = 0;
+
+
+    do
+    {
+        myVid >> imgVid; //une seule image de la vidéo dans une images;
+
+        cv::imshow("Video", imgVid); waitKey(2);
+        //imgBnW = traitImg.binarisation(imgOrig, 180);
+        //
+        //imgEros = traitImg.erosion(imgBnW);
+        //for (int l = 0; l < 2; l++)
+        //    imgEros = traitImg.erosion(imgEros);
+        //
+        //imgDila = traitImg.dilatation(imgEros);
+        //for (int l = 0; l < 10; l++)
+        //    imgDila = traitImg.dilatation(imgDila);
+        //
+        //std::cout << "------------- NOMBRE DE BALLES SUR L'IMAGE: " << traitImg.cptPixel(imgDila, BLANC)/5000 << std::endl;
+
+    } while (waitKey(0)=='q');
+    
+
+
+    // en moyenne de 2200 à 3500 pixels / balles
+    
+
+    //imshow(image_path + " Origine ", imgOrig);
+    //imshow(image_path + " Binarisation ", imgBnW);
+    //imshow(image_path + " Erosion ", imgEros);
+    //imshow(image_path + " Dilatation ", imgDila);
+
+
+    //if (waitKey(0) == 's')
+    //{
+    //    imwrite(image_path, imgOrig);
+    //}
 
     return 0;
 }
@@ -79,6 +121,7 @@ void dessinCarre(Mat& imgOrig)
         posPixelLigne++; posPixelCol--;
     }
 }
+
 void setLigneHorizontal(Mat& img, int posLigne, int posCol, int taille)
 {
     for (int c = posCol; c <= (taille + posCol); c++)

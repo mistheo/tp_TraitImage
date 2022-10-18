@@ -20,6 +20,8 @@ class CTraitementImage
 		uchar getPixel(Mat& img, int ligne, int col);
 		Mat binarisation(Mat&,int);
 		Mat erosion(Mat&);
+		Mat dilatation(Mat&);
+		int cptPixel(Mat&,int);
 
 };
 
